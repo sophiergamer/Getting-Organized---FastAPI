@@ -11,3 +11,4 @@ I hope that this glimpse into my non-computer life inspires you to dive into a c
 
 More on how I developed this API using FastAPI:
 
+To begin this project, I installed Poetry 
