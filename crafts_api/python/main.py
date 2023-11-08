@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from crafts_api import api_schemas, crud, project_model
+from python import api_schemas, crud, project_model
 
 
 # establishing a path to html templates
