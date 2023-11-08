@@ -1,11 +1,9 @@
 
 #imports from python packages
 from fastapi import FastAPI, Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
+from python import api_schemas, crud, project_model, database
 
-from python import api_schemas, crud, project_model
 
 
 # establishing a path to html templates
@@ -15,17 +13,10 @@ from python import api_schemas, crud, project_model
 #establishing an API name and path to the the api, which in this case is using default schema 
 app = FastAPI(title = "Sophie's Never-Ending Project Showcase")
 
-DATABASE_URL = "sqlite:///./myprojectbase.db"
-engine = create_engine(DATABASE_URL, connect_args={'check_same_thread': False})
-
-Base = declarative_base()
-
-project_model.Base.metadata.create_all(bind=engine)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+project_model.Base.metadata.create_all(bind=database.engine)
 
 def get_db():
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         yield db
     finally:
@@ -36,29 +27,28 @@ def root():
     return {'message': 'i hope that this works'}
 
 @app.get("/projects")
-def get_pets(db: Session = Depends(get_db)):
-    return crud.get_projects(db)
+def get_all_projects(db: Session = Depends(get_db)):
+    return crud.get_all_projects(db)
     
-@app.get("/search/", status_code=200, response_model= api_schemas.GeneralProject)
-def search_projects(keyword:str, db: Session = Depends(get_db)):
-    """creating a function to search the API based on any word contained in the project's dictionary"""
-    def all_terms_check(project):
-        """this function checks the keyword against ANY of the string values in name, category, and description"""
-        values = project.values()
-        for value in values:
-            if type(value) is str:
-                if keyword in value:
-                    return True
-        return False
-        results = list(filter(all_terms_check, PROJECTS))
-    return {"results":results}
+# @app.get("/search/", status_code=200, response_model= api_schemas.GeneralProject)
+# def search_projects(keyword:str, db: Session = Depends(get_db)):
+#     """creating a function to search the API based on any word contained in the project's dictionary"""
+#     def all_terms_check(project):
+#         """this function checks the keyword against ANY of the string values in name, category, and description"""
+#         values = project.values()
+#         for value in values:
+#             if type(value) is str:
+#                 if keyword in value:
+#                     return True
+#         return False
+#         results = list(filter(all_terms_check, PROJECTS))
+#     return {"results":results}
 
 
 @app.post("/projects/", response_model=api_schemas.GeneralProject)
 def create_project(project: api_schemas.GeneralProjectBase, db: Session = Depends(get_db)):
     return crud.create_project(db=db, project=project)
 
-        
 
 def validate_completion_status(status: str):
     VALID_EXPRESSIONS = ['completed', 'in-progress', 'future']
