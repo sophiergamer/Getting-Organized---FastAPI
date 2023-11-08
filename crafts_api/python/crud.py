@@ -13,3 +13,9 @@ def create_project(db: Session, project: api_schemas.GeneralProjectBase):
     db.commit()
     db.refresh(db_project)
     return db_project
+
+def delete_project(db: Session, project_id: int):
+    db_project = db.query(project_model.Project).filter(project_model.Project.id == project_id).first()
+    db.delete(db_project)
+    db.commit()
+

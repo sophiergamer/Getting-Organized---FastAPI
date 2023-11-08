@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Sophie's Never-Ending Project Showcase{% endblock %}</title>
+    </head>
+    <body>
+        <h1>Current Projects</h1>
+        <ul>
+        {% for project in projects %} 
+            {%if project.completion_status == 'in-progress' %}
+          <h2>{{ project.name}}</h2>
+          <li>
+            {{project.category}}
+          </li>
+          <li>
+            {{project.description}}
+          </li>
+          <li>
+            {{project.inspiration}}
+          </li>
+          {% endif %}
+        {% endfor %}
+        </ul>
+        <h1>Future Projects</h1>
+        <ul>
+          {% for project in projects %}
+            {% if project.completion_status == 'future' %}
+            <h2>{{ project.name}}</h2>
+            <li>
+              {{project.category}}
+            </li>
+            <li>
+              {{project.description}}
+            </li>
+            <li>
+              {{project.inspiration}}
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+        <h1>Completed Projects</h1>
+        <ul>
+          {% for project in projects %}
+            {% if project.completion_status == 'completed' %}
+            <h2>{{ project.name}}</h2>
+            <li>
+              {{project.category}}
+            </li>
+            <li>
+              {{project.description}}
+            </li>
+            <li>
+              {{project.inspiration}}
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </body>
+</html>

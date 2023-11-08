@@ -1,20 +1,21 @@
 
 #imports from python packages
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from python import api_schemas, crud, project_model, database
-
+from fastapi.templating import Jinja2Templates
+from pathlib import Path
 
 
 # establishing a path to html templates
-# BASE_PATH = Path(__file__).resolve().parent
-# TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "htmlTemplates"))
+BASE_PATH = Path(__file__).resolve().parent
+TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 #establishing an API name and path to the the api, which in this case is using default schema 
 app = FastAPI(title = "Sophie's Never-Ending Project Showcase")
 
 project_model.Base.metadata.create_all(bind=database.engine)
-
 def get_db():
     db = database.SessionLocal()
     try:
@@ -22,14 +23,22 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
-def root():
-    return {'message': 'i hope that this works'}
+@app.get("/projects_page/", response_class=HTMLResponse)
+def get_all_projects(request: Request, db: Session = Depends(get_db)):
+    projects = crud.get_all_projects(db)
+    return TEMPLATES.TemplateResponse("index.html", {"request": request, "projects": projects})
 
-@app.get("/projects")
-def get_all_projects(db: Session = Depends(get_db)):
-    return crud.get_all_projects(db)
+@app.delete("/projects/")
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+    crud.delete_project(db, project_id=project_id)
     
+    return f"You have deleted {project_name}"
+
+
+@app.post("/projects/", response_model=api_schemas.GeneralProject)
+def create_project(project: api_schemas.GeneralProjectBase, db: Session = Depends(get_db)):
+    return crud.create_project(db=db, project=project)
+
 # @app.get("/search/", status_code=200, response_model= api_schemas.GeneralProject)
 # def search_projects(keyword:str, db: Session = Depends(get_db)):
 #     """creating a function to search the API based on any word contained in the project's dictionary"""
@@ -43,11 +52,6 @@ def get_all_projects(db: Session = Depends(get_db)):
 #         return False
 #         results = list(filter(all_terms_check, PROJECTS))
 #     return {"results":results}
-
-
-@app.post("/projects/", response_model=api_schemas.GeneralProject)
-def create_project(project: api_schemas.GeneralProjectBase, db: Session = Depends(get_db)):
-    return crud.create_project(db=db, project=project)
 
 
 def validate_completion_status(status: str):
