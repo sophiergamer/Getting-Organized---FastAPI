@@ -2,14 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Sophie's Never-Ending Project Showcase{% endblock %}</title>
+        <h1 style="text-align: center; font-family: 'Apercu';">{% block title %}Sophie's Never-Ending Project Showcase{% endblock %}</h1>
     </head>
-    <body>
-        <h1>Current Projects</h1>
+    <body >
+        <h2>Current Projects</h2>
         <ul>
         {% for project in projects %} 
             {%if project.completion_status == 'in-progress' %}
-          <h2>{{ project.name}}</h2>
+          <h3>{{ project.name}}</h3>
           <li>
             {{project.category}}
           </li>
@@ -22,11 +22,11 @@
           {% endif %}
         {% endfor %}
         </ul>
-        <h1>Future Projects</h1>
+        <h2>Future Projects</h2>
         <ul>
           {% for project in projects %}
             {% if project.completion_status == 'future' %}
-            <h2>{{ project.name}}</h2>
+            <h3>{{ project.name}}</h3>
             <li>
               {{project.category}}
             </li>
@@ -39,11 +39,11 @@
             {% endif %}
         {% endfor %}
         </ul>
-        <h1>Completed Projects</h1>
+        <h2>Completed Projects</h2>
         <ul>
           {% for project in projects %}
             {% if project.completion_status == 'completed' %}
-            <h2>{{ project.name}}</h2>
+            <h3>{{ project.name}}</h3>
             <li>
               {{project.category}}
             </li>
